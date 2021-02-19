@@ -1,6 +1,6 @@
 # fetch-opengraph
 
-[![npm version](https://badgen.net/npm/v/fetch-opengraph)](https://npm.im/fetch-opengraph) [![CI status](https://github.com/purphoros/fetch-opengraph/workflows/CI/badge.svg)](https://github.com/purphoros/fetch-opengraph/actions)
+[![npm version](https://badgen.net/npm/v/fetch-opengraph)](https://npm.im/fetch-opengraph) [![Node.js CI](https://github.com/purphoros/fetch-opengraph/workflows/Node.js%20CI/badge.svg)](https://github.com/purphoros/fetch-opengraph/actions)
 
 > Badges from istanbul coverage report
 
