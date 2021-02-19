@@ -55,9 +55,7 @@ export const fetch = async (url: string): Promise<any> => {
 
       return resolve(result);
     } catch (error) {
-      console.log(error.message);
       return reject(error);
-      // return reject({ message: 'Unable to get url' });
     }
   });
 };
