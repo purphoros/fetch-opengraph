@@ -20,7 +20,7 @@ yarn add fetch-opengraph
 
 Just a basic index.js running `node .`
 ```javascript
-const fetchOpengraph = require('fetch-opengraph/lib');
+const fetchOpengraph = require('fetch-opengraph');
 
 (async () => {
   const data = await fetchOpengraph.fetch('https://github.com/purphoros/fetch-opengraph');
@@ -32,7 +32,7 @@ const fetchOpengraph = require('fetch-opengraph/lib');
 Running in a web environment
 
 ```javascript
-import fetchOpengraph from 'fetch-opengraph/lib';
+import fetchOpengraph from 'fetch-opengraph';
 
 (async () => {
   const data = await fetchOpengraph.fetch('https://github.com/purphoros/fetch-opengraph');
