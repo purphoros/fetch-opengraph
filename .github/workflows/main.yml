@@ -12,9 +12,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Install modules
+    - name: Install modules via ci
       run: npm ci
     - name: Run tests
       run: npm run test
-    - name: Run tests
+    - name: Run build
       run: npm run build
