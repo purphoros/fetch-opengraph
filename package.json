@@ -1,6 +1,6 @@
 {
   "name": "fetch-opengraph",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": ".fetch() to get opengraph information on a url",
   "main": "index.js",
   "files": [
