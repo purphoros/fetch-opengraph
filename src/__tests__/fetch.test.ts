@@ -1,46 +1,49 @@
-import { fetch } from '../index';
+import { fetch, metaTags } from '../index';
 import axios, { AxiosResponse } from 'axios';
 
 jest.mock('axios');
 
-const title = 'title';
-const description = 'description';
-const ogUrl = 'og:url';
-const ogType = 'og:type';
-const ogTitle = 'og:title';
-const ogDescription = 'og:description';
-const ogImage = 'og:image';
-const twitterCard = 'twitter:card';
-const twitterDomain = 'twitter:domain';
-const twitterUrl = 'twitter:url';
-const twitterTitle = 'twitter:title';
-const twitterDescription = 'twitter:description';
-const twitterImage = 'twitter:image';
+const {
+  title,
+  description,
+  ogUrl,
+  ogType,
+  ogTitle,
+  ogDescription,
+  ogImage,
+  twitterCard,
+  twitterDomain,
+  twitterUrl,
+  twitterTitle,
+  twitterDescription,
+  twitterImage
+} = metaTags;
 
 const url = 'https://github.com/purphoros/fetch-opengraph';
 const getFields = (version: number = 1) => {
+  const image =
+    'https://repository-images.githubusercontent.com/339901906/793fa680-7329-11eb-9502-974e5c68aaa1';
   const fields: any = {
     title: 'purphoros/fetch-opengraph',
     description: 'Fetch opengraph information from an url.',
-    fake: 'not open graph',
+    fake: 'not open graph'
   };
 
   if (version <= 2) {
     fields[twitterCard] = 'summary_large_image';
     fields[twitterDomain] = 'github.com';
     fields[twitterUrl] = url;
-    fields[twitterTitle] = 'purphoros/fetch-opengraph';
-    fields[twitterDescription] = 'Fetch opengraph information from an url.';
-    fields[twitterImage] = 'https://avatars.githubusercontent.com/u/4297636?s=400&v=4';
+    fields[twitterTitle] = fields[title];
+    fields[twitterDescription] = fields[description];
+    fields[twitterImage] = image;
   }
 
   if (version <= 1) {
-    fields[ogType] = 'website';
     fields[ogUrl] = url;
     fields[ogType] = 'website';
-    fields[ogTitle] = 'purphoros/fetch-opengraph';
-    fields[ogDescription] = 'Fetch opengraph information from an url.';
-    fields[ogImage] = 'https://avatars.githubusercontent.com/u/4297636?s=400&v=4';
+    fields[ogTitle] = fields[title];
+    fields[ogDescription] = fields[description];
+    fields[ogImage] = image;
   }
 
   return fields;
@@ -70,7 +73,7 @@ const getMock = (fields: any): AxiosResponse => {
     status: 200,
     statusText: 'OK',
     headers: {},
-    config: {},
+    config: {}
   };
 
   return mockedSuccessfullyResponse;
@@ -81,7 +84,7 @@ const mockedFailedResponse: AxiosResponse = {
   status: 400,
   statusText: 'OK',
   headers: {},
-  config: {},
+  config: {}
 };
 
 it('Returns successfully', async () => {

@@ -1,6 +1,38 @@
 import axios, { AxiosResponse } from 'axios';
 
+export const metaTags = {
+  title: 'title',
+  description: 'description',
+  ogUrl: 'og:url',
+  ogType: 'og:type',
+  ogTitle: 'og:title',
+  ogDescription: 'og:description',
+  ogImage: 'og:image',
+  twitterCard: 'twitter:card',
+  twitterDomain: 'twitter:domain',
+  twitterUrl: 'twitter:url',
+  twitterTitle: 'twitter:title',
+  twitterDescription: 'twitter:description',
+  twitterImage: 'twitter:image'
+};
+
 export const fetch = async (url: string): Promise<any> => {
+  const {
+    title,
+    description,
+    ogUrl,
+    ogType,
+    ogTitle,
+    ogDescription,
+    ogImage,
+    twitterCard,
+    twitterDomain,
+    twitterUrl,
+    twitterTitle,
+    twitterDescription,
+    twitterImage
+  } = metaTags;
+
   return new Promise(async (resolve, reject) => {
     try {
       const response: AxiosResponse<any> = await axios.get(url);
@@ -35,35 +67,47 @@ export const fetch = async (url: string): Promise<any> => {
             match = regex.exec(meta);
             if (match) {
               // This is to prevent an possible endless loop,
-              //   avoid "If path not taken" from code coverage since you're unable to reproduce
+              //   avoid "If path not taken" from code coverage since you're unable to reproduce this and it's required to prevent endless loops
               /* istanbul ignore next */
               if (match.index === regex.lastIndex) regex.lastIndex++;
-              properties = { ...properties, [match[2]]: match[4] !== 'undefined' ? match[4] : null };
+              properties = {
+                ...properties,
+                [match[2]]: match[4] !== 'undefined' ? match[4] : null
+              };
             }
           } while (match);
 
-          if (
-            properties.name &&
-            properties.name.match(/(title|description|twitter:card|twitter:title|twitter:description|twitter:image)/)
-          ) {
+          const reName = new RegExp(
+            `(${title}|${description}|${twitterCard}|${twitterTitle}|${twitterDescription}|${twitterImage})`
+          );
+          if (properties.name && properties.name.match(reName)) {
             og.push({ name: properties.name, value: properties.content });
           }
 
-          if (
-            properties.property &&
-            properties.property.match(
-              /(og[:]url|og.type|og\:title|og\:description|og\:image|twitter\:domain|twitter\:url)/,
-            )
-          ) {
+          const reProperty = new RegExp(
+            `(${ogUrl}|${ogType}|${ogTitle}|${ogDescription}|${ogImage}|${twitterDomain}|${twitterUrl})`
+          );
+          if (properties.property && properties.property.match(reProperty)) {
             og.push({ name: properties.property, value: properties.content });
           }
         }
       }
 
-      const result = og.reduce((chain: any, meta: any) => ({ ...chain, [meta.name]: meta.value }), {});
+      const result = og.reduce(
+        (chain: any, meta: any) => ({ ...chain, [meta.name]: meta.value }),
+        {}
+      );
 
-      result.image = result['og:image'] ? result['og:image'] : result['twitter:image'] ? result['twitter:image'] : null;
-      result.url = result['og:url'] ? result['og:url'] : result['twitter:url'] ? result['twitter:url'] : url;
+      result.image = result[ogImage]
+        ? result[ogImage]
+        : result[twitterImage]
+        ? result[twitterImage]
+        : null;
+      result.url = result[ogUrl]
+        ? result[ogUrl]
+        : result[twitterUrl]
+        ? result[twitterUrl]
+        : url;
 
       return resolve(result);
     } catch (error) {
