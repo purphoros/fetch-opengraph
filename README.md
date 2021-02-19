@@ -56,4 +56,4 @@ import fetchOpengraph from 'fetch-opengraph/lib';
   'og:description': 'Fetch opengraph information from an url.',
   image: 'https://avatars.githubusercontent.com/u/4297636?s=400&amp;v=4',
   url: 'https://github.com/purphoros/fetch-opengraph'
-}```
+}
