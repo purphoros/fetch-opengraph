@@ -28,7 +28,7 @@
   "author": {
     "name": "Benjamin C. Tehan"
   },
-  "license": "ISC",
+  "license": "MIT License",
   "bugs": {
     "url": "https://github.com/purphoros/fetch-opengraph/issues"
   },
