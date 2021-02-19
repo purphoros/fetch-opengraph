@@ -1,5 +1,14 @@
 # fetch-opengraph
 
+[![npm version](https://badgen.net/npm/v/fetch-opengraph)](https://npm.im/fetch-opengraph) [![CI status](https://github.com/purphoros/fetch-opengraph/workflows/CI/badge.svg)](https://github.com/purphoros/fetch-opengraph/actions)
+
+> Badges from istanbul coverage report
+
+| Statements                                                                    | Branches                                                               | Functions                                                                    | Lines                                                                   |
+| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| ![Statements](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg) | ![Branches](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg) | ![Functions](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg) | ![Lines](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg) |
+
+
 Fetch opengraph information from an url.
 
 ## Install

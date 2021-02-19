@@ -1,15 +1,20 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 export const fetch = async (url: string): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     try {
-      const response = await axios.get(url);
+      const response: AxiosResponse<any> = await axios.get(url);
 
-      if (response.status >= 400) return reject(response);
+      if (response.status >= 400) {
+        throw response;
+      }
 
       const html = await response.data;
       const metas = html.match(/<meta[^>]+>/gim);
       const og = [];
+
+      // There is no else statement
+      /* istanbul ignore else */
       if (metas) {
         for (const meta of metas) {
           let properties: any = {};
@@ -29,20 +34,26 @@ export const fetch = async (url: string): Promise<any> => {
           do {
             match = regex.exec(meta);
             if (match) {
+              // This is to prevent an possible endless loop,
+              //   avoid "If path not taken" from code coverage since you're unable to reproduce
+              /* istanbul ignore next */
               if (match.index === regex.lastIndex) regex.lastIndex++;
-              properties = { ...properties, [match[2]]: match[4] };
+              properties = { ...properties, [match[2]]: match[4] !== 'undefined' ? match[4] : null };
             }
           } while (match);
 
-          // Filter out valid name and properties
           if (
             properties.name &&
-            properties.name.match(/(description|twitter:card|twitter:title|twitter:description|twitter:image)/)
+            properties.name.match(/(title|description|twitter:card|twitter:title|twitter:description|twitter:image)/)
           ) {
             og.push({ name: properties.name, value: properties.content });
-          } else if (
+          }
+
+          if (
             properties.property &&
-            properties.property.match(/(og:url|og:type|og:title|og:description|og:image|twitter:domain|twitter:url)/)
+            properties.property.match(
+              /(og[:]url|og.type|og\:title|og\:description|og\:image|twitter\:domain|twitter\:url)/,
+            )
           ) {
             og.push({ name: properties.property, value: properties.content });
           }
@@ -50,6 +61,7 @@ export const fetch = async (url: string): Promise<any> => {
       }
 
       const result = og.reduce((chain: any, meta: any) => ({ ...chain, [meta.name]: meta.value }), {});
+
       result.image = result['og:image'] ? result['og:image'] : result['twitter:image'] ? result['twitter:image'] : null;
       result.url = result['og:url'] ? result['og:url'] : result['twitter:url'] ? result['twitter:url'] : url;
 

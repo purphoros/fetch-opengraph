@@ -1,4 +1,4 @@
-name: CI
+name: Node.js CI
 
 on:
   push:
@@ -13,8 +13,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install modules
-      run: npm install
-    - name: Run 
-      run: npm install
+      run: npm ci
     - name: Run tests
       run: npm run test
+    - name: Run tests
+      run: npm run build
