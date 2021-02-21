@@ -1,12 +1,6 @@
 # fetch-opengraph
 
-[![npm version](https://badgen.net/npm/v/fetch-opengraph)](https://npm.im/fetch-opengraph) [![Node.js CI](https://github.com/purphoros/fetch-opengraph/workflows/Node.js%20CI/badge.svg)](https://github.com/purphoros/fetch-opengraph/actions)
-
-> Badges from istanbul coverage report
-
-| Statements                                                                    | Branches                                                               | Functions                                                                    | Lines                                                                   |
-| ----------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| ![Statements](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg) | ![Branches](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg) | ![Functions](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg) | ![Lines](https://img.shields.io/badge/Coverage-100%25-brightgreen.svg) |
+[![npm version](https://badgen.net/npm/v/fetch-opengraph)](https://npm.im/fetch-opengraph) [![Node.js CI](https://github.com/purphoros/fetch-opengraph/workflows/Node.js%20CI/badge.svg)](https://github.com/purphoros/fetch-opengraph/actions) [![Build Status](https://travis-ci.com/purphoros/fetch-opengraph.svg?branch=master)](https://travis-ci.com/purphoros/fetch-opengraph) [![Coverage Status](https://coveralls.io/repos/github/purphoros/fetch-opengraph/badge.svg?branch=master)](https://coveralls.io/github/purphoros/fetch-opengraph?branch=master)
 
 
 Fetch opengraph information from an url.
