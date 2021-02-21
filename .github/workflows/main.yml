@@ -14,11 +14,19 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install modules via ci
       run: npm ci
+
     - name: Run tests
       run: npm run test
+
     - name: Run build
       run: npm run build
-    - name: Coveralls
+
+    - name: Push update to coveralls
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Push update to npm
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
