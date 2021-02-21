@@ -1,6 +1,6 @@
 # fetch-opengraph
 
-[![npm version](https://badgen.net/npm/v/fetch-opengraph)](https://npm.im/fetch-opengraph) [![CI-CD](https://github.com/purphoros/fetch-opengraph/actions/workflows/main.yml/badge.svg)](https://github.com/purphoros/fetch-opengraph/actions/workflows/main.yml) [![Build Status](https://travis-ci.com/purphoros/fetch-opengraph.svg?branch=master)](https://travis-ci.com/purphoros/fetch-opengraph) [![Coverage Status](https://coveralls.io/repos/github/purphoros/fetch-opengraph/badge.svg?branch=master)](https://coveralls.io/github/purphoros/fetch-opengraph?branch=master) [![License](https://img.shields.io/npm/l/@jsdevtools/npm-publish.svg)](LICENSE)
+[![npm version](https://badgen.net/npm/v/fetch-opengraph)](https://npm.im/fetch-opengraph) [![CI-CD](https://github.com/purphoros/fetch-opengraph/actions/workflows/main.yml/badge.svg)](https://github.com/purphoros/fetch-opengraph/actions/workflows/main.yml) [![Coverage Status](https://coveralls.io/repos/github/purphoros/fetch-opengraph/badge.svg?branch=master)](https://coveralls.io/github/purphoros/fetch-opengraph?branch=master) [![License](https://img.shields.io/npm/l/@jsdevtools/npm-publish.svg)](LICENSE)
 
 
 Fetch opengraph information from an url.
