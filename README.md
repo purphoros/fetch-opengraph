@@ -1,6 +1,6 @@
 # fetch-opengraph
 
-[![npm version](https://badgen.net/npm/v/fetch-opengraph)](https://npm.im/fetch-opengraph) [![CI-CD](https://github.com/purphoros/fetch-opengraph/actions/workflows/main.yml/badge.svg)](https://github.com/purphoros/fetch-opengraph/actions/workflows/main.yml) [![Coverage Status](https://coveralls.io/repos/github/purphoros/fetch-opengraph/badge.svg?branch=master)](https://coveralls.io/github/purphoros/fetch-opengraph?branch=master) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm version](https://badgen.net/npm/v/fetch-opengraph)](https://npm.im/fetch-opengraph) [![CI-CD](https://github.com/purphoros/fetch-opengraph/actions/workflows/main.yml/badge.svg)](https://github.com/purphoros/fetch-opengraph/actions/workflows/main.yml) [![Coverage Status](https://coveralls.io/repos/github/purphoros/fetch-opengraph/badge.svg?branch=master)](https://coveralls.io/github/purphoros/fetch-opengraph?branch=master) [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
 
 Fetch opengraph information from an url.
