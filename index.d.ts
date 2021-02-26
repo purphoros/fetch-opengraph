@@ -14,3 +14,7 @@ export declare const metaTags: {
     twitterImage: string;
 };
 export declare const fetch: (url: string) => Promise<any>;
+declare const _default: {
+    fetch: (url: string) => Promise<any>;
+};
+export default _default;

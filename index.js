@@ -93,4 +93,7 @@ const fetch = (url) => __awaiter(void 0, void 0, void 0, function* () {
     }));
 });
 exports.fetch = fetch;
+exports.default = {
+    fetch: exports.fetch
+};
 //# sourceMappingURL=index.js.map

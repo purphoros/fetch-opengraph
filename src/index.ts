@@ -115,3 +115,7 @@ export const fetch = async (url: string): Promise<any> => {
     }
   });
 };
+
+export default {
+  fetch
+};
