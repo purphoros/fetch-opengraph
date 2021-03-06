@@ -35,10 +35,10 @@ const fetchOpengraph = require('fetch-opengraph');
 Running in a web environment
 
 ```javascript
-import fetchOpengraph from 'fetch-opengraph';
+import { fetch } from 'fetch-opengraph';
 
 (async () => {
-  const data = await fetchOpengraph.fetch('https://github.com/purphoros/fetch-opengraph');
+  const data = await fetch('https://github.com/purphoros/fetch-opengraph');
   console.log(data)
 })()
 ```
