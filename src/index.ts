@@ -35,13 +35,30 @@ export const fetch = async (url: string): Promise<any> => {
 
   return new Promise(async (resolve, reject) => {
     try {
-      const response: AxiosResponse<any> = await axios.get(url);
+      const response: AxiosResponse<any> = await axios.get(url, {
+        headers: {
+          'Cache-Control': 'no-cache',
+          'User-Agent': 'PostmanRuntime/7.26.10',
+          Accept: '*/*',
+          Connection: 'keep-alive'
+        }
+      });
 
       if (response.status >= 400) {
         throw response;
       }
 
+      let siteTitle = '';
       const html = await response.data;
+
+      const tagTitle = html.match(
+        /<title[^>]*>[\r\n\t\s]*([^<]+)[\r\n\t\s]*<\/title>/gim
+      );
+      siteTitle = tagTitle[0].replace(
+        /<title[^>]*>[\r\n\t\s]*([^<]+)[\r\n\t\s]*<\/title>/gim,
+        '$1'
+      );
+
       const metas = html.match(/<meta[^>]+>/gim);
       const og = [];
 
@@ -98,16 +115,48 @@ export const fetch = async (url: string): Promise<any> => {
         {}
       );
 
+      // Image
+      result[ogImage] = result[ogImage] ? result[ogImage] : null;
+
+      result[twitterImage] = result[twitterImage]
+        ? result[twitterImage]
+        : result[ogImage];
+
       result.image = result[ogImage]
         ? result[ogImage]
         : result[twitterImage]
         ? result[twitterImage]
         : null;
-      result.url = result[ogUrl]
-        ? result[ogUrl]
-        : result[twitterUrl]
+
+      // URL
+      result[ogUrl] = result[ogUrl] ? result[ogUrl] : url;
+
+      result[twitterUrl] = result[twitterUrl]
         ? result[twitterUrl]
-        : url;
+        : result[ogUrl];
+
+      result.url = result[ogUrl];
+
+      // Description
+      result[ogDescription] = result[ogDescription]
+        ? result[ogDescription]
+        : result.description;
+
+      result[twitterDescription] = result[twitterDescription]
+        ? result[twitterDescription]
+        : result[ogDescription];
+
+      // Title
+      result[ogTitle] = result[ogTitle] ? result[ogTitle] : siteTitle;
+
+      result[twitterTitle] = result[twitterTitle]
+        ? result[twitterTitle]
+        : result[ogTitle];
+
+      result.title = result[ogTitle];
+
+      // Type
+      result[ogType] = result[ogType] ? result[ogType] : 'website';
 
       return resolve(result);
     } catch (error) {
