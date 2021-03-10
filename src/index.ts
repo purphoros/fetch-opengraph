@@ -38,7 +38,6 @@ export const fetch = async (url: string): Promise<any> => {
       const response: AxiosResponse<any> = await axios.get(url, {
         headers: {
           'Cache-Control': 'no-cache',
-          'User-Agent': 'PostmanRuntime/7.26.10',
           Accept: '*/*',
           Connection: 'keep-alive'
         }
