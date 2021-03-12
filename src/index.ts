@@ -145,6 +145,8 @@ export const fetch = async (url: string): Promise<any> => {
         ? result[twitterDescription]
         : result[ogDescription];
 
+      result.description = result[ogDescription];
+
       // Title
       result[ogTitle] = result[ogTitle] ? result[ogTitle] : siteTitle;
 
