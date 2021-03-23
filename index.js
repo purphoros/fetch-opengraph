@@ -30,11 +30,20 @@ const fetch = (url) => __awaiter(void 0, void 0, void 0, function* () {
     const { title, description, ogUrl, ogType, ogTitle, ogDescription, ogImage, twitterCard, twitterDomain, twitterUrl, twitterTitle, twitterDescription, twitterImage } = exports.metaTags;
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const response = yield axios_1.default.get(url);
+            const response = yield axios_1.default.get(url, {
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    Accept: '*/*',
+                    Connection: 'keep-alive'
+                }
+            });
             if (response.status >= 400) {
                 throw response;
             }
+            let siteTitle = '';
             const html = yield response.data;
+            const tagTitle = html.match(/<title[^>]*>[\r\n\t\s]*([^<]+)[\r\n\t\s]*<\/title>/gim);
+            siteTitle = tagTitle[0].replace(/<title[^>]*>[\r\n\t\s]*([^<]+)[\r\n\t\s]*<\/title>/gim, '$1');
             const metas = html.match(/<meta[^>]+>/gim);
             const og = [];
             // There is no else statement
@@ -75,20 +84,56 @@ const fetch = (url) => __awaiter(void 0, void 0, void 0, function* () {
                 }
             }
             const result = og.reduce((chain, meta) => (Object.assign(Object.assign({}, chain), { [meta.name]: meta.value })), {});
+            // Image
+            result[ogImage] = result[ogImage] ? result[ogImage] : null;
+            result[twitterImage] = result[twitterImage]
+                ? result[twitterImage]
+                : result[ogImage];
             result.image = result[ogImage]
                 ? result[ogImage]
                 : result[twitterImage]
                     ? result[twitterImage]
                     : null;
-            result.url = result[ogUrl]
-                ? result[ogUrl]
-                : result[twitterUrl]
-                    ? result[twitterUrl]
-                    : url;
+            // URL
+            result[ogUrl] = result[ogUrl] ? result[ogUrl] : url;
+            result[twitterUrl] = result[twitterUrl]
+                ? result[twitterUrl]
+                : result[ogUrl];
+            result.url = result[ogUrl];
+            // Description
+            result[ogDescription] = result[ogDescription]
+                ? result[ogDescription]
+                : result.description;
+            result[twitterDescription] = result[twitterDescription]
+                ? result[twitterDescription]
+                : result[ogDescription];
+            result.description = result[ogDescription];
+            // Title
+            result[ogTitle] = result[ogTitle] ? result[ogTitle] : siteTitle;
+            result[twitterTitle] = result[twitterTitle]
+                ? result[twitterTitle]
+                : result[ogTitle];
+            result.title = result[ogTitle];
+            // Type
+            result[ogType] = result[ogType] ? result[ogType] : 'website';
             return resolve(result);
         }
         catch (error) {
-            return reject(error);
+            return resolve({
+                'title': '',
+                'description': '',
+                'og:url': url,
+                'og:type': '',
+                'og:title': '',
+                'og:description': '',
+                'og:image': '',
+                'twitter:card': '',
+                'twitter:domain': '',
+                'twitter:url': url,
+                'twitter:title': '',
+                'twitter:description': '',
+                'twitter:image': '',
+            });
         }
     }));
 });

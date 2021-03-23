@@ -161,7 +161,21 @@ export const fetch = async (url: string): Promise<any> => {
 
       return resolve(result);
     } catch (error) {
-      return reject(error);
+      return resolve({
+        'title': '',
+        'description': '',
+        'og:url': url,
+        'og:type': '',
+        'og:title': '',
+        'og:description': '',
+        'og:image': '',
+        'twitter:card': '',
+        'twitter:domain': '',
+        'twitter:url': url,
+        'twitter:title': '',
+        'twitter:description': '',
+        'twitter:image': '',
+      });
     }
   });
 };
