@@ -16,7 +16,7 @@ export const metaTags = {
   twitterImage: 'twitter:image'
 };
 
-export const fetch = async (url: string): Promise<any> => {
+export const fetch = async (url: string, headers?: any): Promise<any> => {
   const {
     title,
     description,
@@ -37,9 +37,11 @@ export const fetch = async (url: string): Promise<any> => {
     try {
       const response: AxiosResponse<any> = await axios.get(url, {
         headers: {
+          'User-Agent': 'OpenGraph',
           'Cache-Control': 'no-cache',
           Accept: '*/*',
-          Connection: 'keep-alive'
+          Connection: 'keep-alive',
+          ...headers
         }
       });
 
@@ -161,21 +163,7 @@ export const fetch = async (url: string): Promise<any> => {
 
       return resolve(result);
     } catch (error) {
-      return resolve({
-        'title': '',
-        'description': '',
-        'og:url': url,
-        'og:type': '',
-        'og:title': '',
-        'og:description': '',
-        'og:image': '',
-        'twitter:card': '',
-        'twitter:domain': '',
-        'twitter:url': url,
-        'twitter:title': '',
-        'twitter:description': '',
-        'twitter:image': '',
-      });
+      return reject(error);
     }
   });
 };

@@ -13,8 +13,8 @@ export declare const metaTags: {
     twitterDescription: string;
     twitterImage: string;
 };
-export declare const fetch: (url: string) => Promise<any>;
+export declare const fetch: (url: string, headers?: any) => Promise<any>;
 declare const _default: {
-    fetch: (url: string) => Promise<any>;
+    fetch: (url: string, headers?: any) => Promise<any>;
 };
 export default _default;

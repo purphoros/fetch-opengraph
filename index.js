@@ -26,16 +26,12 @@ exports.metaTags = {
     twitterDescription: 'twitter:description',
     twitterImage: 'twitter:image'
 };
-const fetch = (url) => __awaiter(void 0, void 0, void 0, function* () {
+const fetch = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
     const { title, description, ogUrl, ogType, ogTitle, ogDescription, ogImage, twitterCard, twitterDomain, twitterUrl, twitterTitle, twitterDescription, twitterImage } = exports.metaTags;
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const response = yield axios_1.default.get(url, {
-                headers: {
-                    'Cache-Control': 'no-cache',
-                    Accept: '*/*',
-                    Connection: 'keep-alive'
-                }
+                headers: Object.assign({ 'User-Agent': 'OpenGraph', 'Cache-Control': 'no-cache', Accept: '*/*', Connection: 'keep-alive' }, headers)
             });
             if (response.status >= 400) {
                 throw response;
@@ -119,21 +115,7 @@ const fetch = (url) => __awaiter(void 0, void 0, void 0, function* () {
             return resolve(result);
         }
         catch (error) {
-            return resolve({
-                'title': '',
-                'description': '',
-                'og:url': url,
-                'og:type': '',
-                'og:title': '',
-                'og:description': '',
-                'og:image': '',
-                'twitter:card': '',
-                'twitter:domain': '',
-                'twitter:url': url,
-                'twitter:title': '',
-                'twitter:description': '',
-                'twitter:image': '',
-            });
+            return reject(error);
         }
     }));
 });
