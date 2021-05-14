@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fetch = exports.metaTags = void 0;
 const axios_1 = require("axios");
+const html_entities_1 = require("html-entities");
 exports.metaTags = {
     title: 'title',
     description: 'description',
@@ -79,7 +80,7 @@ const fetch = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
                     }
                 }
             }
-            const result = og.reduce((chain, meta) => (Object.assign(Object.assign({}, chain), { [meta.name]: meta.value })), {});
+            const result = og.reduce((chain, meta) => (Object.assign(Object.assign({}, chain), { [meta.name]: html_entities_1.decode(meta.value) })), {});
             // Image
             result[ogImage] = result[ogImage] ? result[ogImage] : null;
             result[twitterImage] = result[twitterImage]

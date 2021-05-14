@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
+import { decode } from 'html-entities';
 
 export const metaTags = {
   title: 'title',
@@ -112,7 +113,7 @@ export const fetch = async (url: string, headers?: any): Promise<any> => {
       }
 
       const result = og.reduce(
-        (chain: any, meta: any) => ({ ...chain, [meta.name]: meta.value }),
+        (chain: any, meta: any) => ({ ...chain, [meta.name]: decode(meta.value) }),
         {}
       );
 
