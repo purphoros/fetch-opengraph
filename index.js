@@ -116,7 +116,24 @@ const fetch = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
             return resolve(result);
         }
         catch (error) {
-            return reject(error);
+            return reject({
+                message: error.message,
+                status: error.status,
+                error,
+                [title]: "",
+                [description]: "",
+                [ogUrl]: url,
+                [ogType]: "website",
+                [ogTitle]: "",
+                [ogDescription]: "",
+                [ogImage]: "",
+                [twitterCard]: "",
+                [twitterDomain]: "",
+                [twitterUrl]: url,
+                [twitterTitle]: "",
+                [twitterDescription]: "",
+                [twitterImage]: ""
+            });
         }
     }));
 });

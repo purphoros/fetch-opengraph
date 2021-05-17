@@ -165,7 +165,8 @@ export const fetch = async (url: string, headers?: any): Promise<any> => {
       return resolve(result);
     } catch (error) {
         return reject({
-          message: error?.message,
+          message: error.message,
+          status: error.status,
           error,
           [title]: "",
           [description]: "",
