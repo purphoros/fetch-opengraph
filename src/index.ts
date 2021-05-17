@@ -164,7 +164,23 @@ export const fetch = async (url: string, headers?: any): Promise<any> => {
 
       return resolve(result);
     } catch (error) {
-      return reject(error);
+        return reject({
+          message: error?.message,
+          error,
+          [title]: "",
+          [description]: "",
+          [ogUrl]: url,
+          [ogType]: "website",
+          [ogTitle]: "",
+          [ogDescription]: "",
+          [ogImage]: "",
+          [twitterCard]: "",
+          [twitterDomain]: "",
+          [twitterUrl]: url,
+          [twitterTitle]: "",
+          [twitterDescription]: "",
+          [twitterImage]: ""
+      });
     }
   });
 };
