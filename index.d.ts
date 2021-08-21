@@ -13,6 +13,7 @@ export declare const metaTags: {
     twitterDescription: string;
     twitterImage: string;
 };
+export declare const queryParams: (str: string) => {};
 export declare const fetch: (url: string, headers?: any) => Promise<any>;
 declare const _default: {
     fetch: (url: string, headers?: any) => Promise<any>;

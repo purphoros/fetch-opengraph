@@ -17,6 +17,25 @@ export const metaTags = {
   twitterImage: 'twitter:image'
 };
 
+export const queryParams = (str: string) => {
+  const url = str.replace(/^([^#]*).*/, "$1").replace(/^[^?]*\??(.*)/, "$1");
+  let result = {};
+  const regex = /([^=]+)=([^&]+)&?/g;
+  let match: RegExpExecArray | null;
+  do {
+    match = regex.exec(url);
+    if (match) {
+      // This is to prevent an possible endless loop,
+      //   avoid "If path not taken" from code coverage since you're unable to reproduce this and it's required to prevent endless loops
+      /* istanbul ignore next */
+      if (match.index === regex.lastIndex) regex.lastIndex++;
+      result = { ...result, [match[1]]: match[2] }
+    }
+  } while (match);
+
+  return result;
+}
+
 export const fetch = async (url: string, headers?: any): Promise<any> => {
   const {
     title,
@@ -36,7 +55,8 @@ export const fetch = async (url: string, headers?: any): Promise<any> => {
 
   return new Promise(async (resolve, reject) => {
     try {
-      const response: AxiosResponse<any> = await axios.get(url, {
+      const response: AxiosResponse<any> = await axios.get(url.replace(/^([^?#]*).*/, "$1"), {
+        params: queryParams(url),
         headers: {
           'User-Agent': 'OpenGraph',
           'Cache-Control': 'no-cache',

@@ -1,4 +1,4 @@
-import { fetch, metaTags } from '../index';
+import { queryParams, fetch, metaTags } from '../index';
 import axios, { AxiosResponse } from 'axios';
 
 jest.mock('axios');
@@ -19,7 +19,7 @@ const {
   twitterImage
 } = metaTags;
 
-const url = 'https://github.com/purphoros/fetch-opengraph';
+const url = 'https://github.com/purphoros/fetch-opengraph?key1=val1&key2=val2#test';
 const getFields = (version: number = 1) => {
   const image =
     'https://repository-images.githubusercontent.com/339901906/793fa680-7329-11eb-9502-974e5c68aaa1';
@@ -140,7 +140,7 @@ it('Returns successfully no opengraph', async () => {
   expect(result[description]).toEqual(fields[description]);
 });
 
-it('returns 400', async () => {
+it('Returns 400', async () => {
   const mockedAxios = axios as jest.Mocked<typeof axios>;
   mockedAxios.get.mockResolvedValue(mockedFailedResponse);
 
@@ -151,4 +151,12 @@ it('returns 400', async () => {
   } finally {
     expect(axios.get).toHaveBeenCalled();
   }
+});
+
+it('Returns query params from query string', async () => {
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
+  mockedAxios.get.mockResolvedValue(mockedFailedResponse);
+  const params: any = queryParams(url);
+  expect(params.key1).toEqual("val1");
+  expect(params.key2).toEqual("val2");
 });

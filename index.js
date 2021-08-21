@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetch = exports.metaTags = void 0;
+exports.fetch = exports.queryParams = exports.metaTags = void 0;
 const axios_1 = require("axios");
 const html_entities_1 = require("html-entities");
 exports.metaTags = {
@@ -27,11 +27,31 @@ exports.metaTags = {
     twitterDescription: 'twitter:description',
     twitterImage: 'twitter:image'
 };
+const queryParams = (str) => {
+    const url = str.replace(/^([^#]*).*/, "$1").replace(/^[^?]*\??(.*)/, "$1");
+    let result = {};
+    const regex = /([^=]+)=([^&]+)&?/g;
+    let match;
+    do {
+        match = regex.exec(url);
+        if (match) {
+            // This is to prevent an possible endless loop,
+            //   avoid "If path not taken" from code coverage since you're unable to reproduce this and it's required to prevent endless loops
+            /* istanbul ignore next */
+            if (match.index === regex.lastIndex)
+                regex.lastIndex++;
+            result = Object.assign(Object.assign({}, result), { [match[1]]: match[2] });
+        }
+    } while (match);
+    return result;
+};
+exports.queryParams = queryParams;
 const fetch = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
     const { title, description, ogUrl, ogType, ogTitle, ogDescription, ogImage, twitterCard, twitterDomain, twitterUrl, twitterTitle, twitterDescription, twitterImage } = exports.metaTags;
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const response = yield axios_1.default.get(url, {
+            const response = yield axios_1.default.get(url.replace(/^([^?#]*).*/, "$1"), {
+                params: exports.queryParams(url),
                 headers: Object.assign({ 'User-Agent': 'OpenGraph', 'Cache-Control': 'no-cache', Accept: '*/*', Connection: 'keep-alive' }, headers)
             });
             if (response.status >= 400) {
