@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.fetch = exports.queryParams = exports.metaTags = void 0;
+exports.fetch = exports.fetchRaw = exports.queryParams = exports.metaTags = void 0;
 const axios_1 = require("axios");
 const html_entities_1 = require("html-entities");
 exports.metaTags = {
@@ -46,8 +46,7 @@ const queryParams = (str) => {
     return result;
 };
 exports.queryParams = queryParams;
-const fetch = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
-    const { title, description, ogUrl, ogType, ogTitle, ogDescription, ogImage, twitterCard, twitterDomain, twitterUrl, twitterTitle, twitterDescription, twitterImage } = exports.metaTags;
+const fetchRaw = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const response = yield axios_1.default.get(url.replace(/^([^?#]*).*/, "$1"), {
@@ -57,39 +56,35 @@ const fetch = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
             if (response.status >= 400) {
                 throw response;
             }
+            return yield resolve(response.data);
+        }
+        catch (error) {
+            return reject({ message: error.message });
+        }
+    }));
+});
+exports.fetchRaw = fetchRaw;
+const fetch = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
+    const { title, description, ogUrl, ogType, ogTitle, ogDescription, ogImage, twitterCard, twitterDomain, twitterUrl, twitterTitle, twitterDescription, twitterImage } = exports.metaTags;
+    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+        try {
+            const html = yield exports.fetchRaw(url, headers);
             let siteTitle = '';
-            const html = yield response.data;
             const tagTitle = html.match(/<title[^>]*>[\r\n\t\s]*([^<]+)[\r\n\t\s]*<\/title>/gim);
             siteTitle = tagTitle[0].replace(/<title[^>]*>[\r\n\t\s]*([^<]+)[\r\n\t\s]*<\/title>/gim, '$1');
-            const metas = html.match(/<meta[^>]+>/gim);
             const og = [];
+            const metas = html.match(/<meta[^>]+>/gim);
             // There is no else statement
             /* istanbul ignore else */
             if (metas) {
                 for (const meta of metas) {
                     let properties = {};
-                    // (                      Create capture group 1
-                    //   (?<key>[^\s]+)       Create capture group 2 called key, capture everything backwards from the = sign upto and not including \s
-                    //   =                    Match a =
-                    //   (['"])               Create capture group \3 matching a double or single quote
-                    //   \s*                  0 or more \s
-                    //   (?<value>.*?)        Create capture group 4 called value that is not greedy ant takes everything upto the following look forward
-                    //   (?=\3)               Look forward and make sure there is a corresponding \3
-                    //   \3                   Match \3
-                    // )+                     Finish capture group 1 and repeat it
-                    const regex = /((?<key>[^\s]+)=(['"])\s*(?<value>.*?)(?=\3)\3)+/gm;
-                    let match;
-                    do {
-                        match = regex.exec(meta);
-                        if (match) {
-                            // This is to prevent an possible endless loop,
-                            //   avoid "If path not taken" from code coverage since you're unable to reproduce this and it's required to prevent endless loops
-                            /* istanbul ignore next */
-                            if (match.index === regex.lastIndex)
-                                regex.lastIndex++;
-                            properties = Object.assign(Object.assign({}, properties), { [match[2]]: match[4] !== 'undefined' ? match[4] : null });
-                        }
-                    } while (match);
+                    const split = meta.replace(/<meta[\s\t\r\n]+(.*)/g, "$1").replace(/\s*\/?>/, "").split(/([\w:]+)=/);
+                    for (let i = 1; i < split.length; i = i + 2) {
+                        const key = split[i].trim().replace(/(["']?)(.*?)\1/, "$2");
+                        const value = split[i + 1].trim().replace(/(["']?)(.*?)\1/, "$2");
+                        properties = Object.assign(Object.assign({}, properties), { [key]: typeof value !== 'undefined' && value !== 'undefined' ? value : undefined });
+                    }
                     const reName = new RegExp(`(${title}|${description}|${twitterCard}|${twitterTitle}|${twitterDescription}|${twitterImage})`);
                     if (properties.name && properties.name.match(reName)) {
                         og.push({ name: properties.name, value: properties.content });
@@ -100,7 +95,9 @@ const fetch = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
                     }
                 }
             }
-            const result = og.reduce((chain, meta) => (Object.assign(Object.assign({}, chain), { [meta.name]: html_entities_1.decode(meta.value) })), {});
+            const result = og.reduce((chain, meta) => (Object.assign(Object.assign({}, chain), { [meta.name]: html_entities_1.decode(meta.value) })), {
+                url
+            });
             // Image
             result[ogImage] = result[ogImage] ? result[ogImage] : null;
             result[twitterImage] = result[twitterImage]
@@ -116,7 +113,7 @@ const fetch = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
             result[twitterUrl] = result[twitterUrl]
                 ? result[twitterUrl]
                 : result[ogUrl];
-            result.url = result[ogUrl];
+            result.url = url;
             // Description
             result[ogDescription] = result[ogDescription]
                 ? result[ogDescription]
@@ -138,7 +135,7 @@ const fetch = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
         catch (error) {
             return reject({
                 message: error.message,
-                status: error.status,
+                status: error.status || 400,
                 error,
                 [title]: "",
                 [description]: "",
@@ -159,6 +156,7 @@ const fetch = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.fetch = fetch;
 exports.default = {
-    fetch: exports.fetch
+    fetch: exports.fetch,
+    fetchRaw: exports.fetchRaw
 };
 //# sourceMappingURL=index.js.map
