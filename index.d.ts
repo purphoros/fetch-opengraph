@@ -1,18 +1,4 @@
-export declare const metaTags: {
-    title: string;
-    description: string;
-    ogUrl: string;
-    ogType: string;
-    ogTitle: string;
-    ogDescription: string;
-    ogImage: string;
-    twitterCard: string;
-    twitterDomain: string;
-    twitterUrl: string;
-    twitterTitle: string;
-    twitterDescription: string;
-    twitterImage: string;
-};
+export declare const metaTags: any;
 export declare const queryParams: (str: string) => {};
 export declare const fetchRaw: (url: string, headers?: any) => Promise<any>;
 export declare const fetch: (url: string, headers?: any) => Promise<any>;
