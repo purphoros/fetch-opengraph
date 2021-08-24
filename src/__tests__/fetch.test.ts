@@ -24,12 +24,12 @@ const getFields = (version: number = 1) => {
   const image =
     'https://repository-images.githubusercontent.com/339901906/793fa680-7329-11eb-9502-974e5c68aaa1';
   const fields: any = {
-    title: 'purphoros/fetch-opengraph',
-    description: 'Fetch opengraph information from an url.',
+    title: 'GitHub - purphoros/fetch-opengraph: Fetch opengraph information from an url.',
+    description: 'Fetch opengraph information from an url. Contribute to purphoros/fetch-opengraph development by creating an account on GitHub.',
     fake: 'not open graph'
   };
 
-  if (version <= 2) {
+  if (version >= 2) {
     fields[twitterCard] = 'summary_large_image';
     fields[twitterDomain] = 'github.com';
     fields[twitterUrl] = url;
@@ -38,7 +38,7 @@ const getFields = (version: number = 1) => {
     fields[twitterImage] = image;
   }
 
-  if (version <= 1) {
+  if (version >= 1) {
     fields[ogUrl] = url;
     fields[ogType] = 'website';
     fields[ogTitle] = fields[title];
@@ -58,14 +58,14 @@ const getMock = (fields: any): AxiosResponse => {
 
       <!-- Facebook Meta Tags -->
       <meta property="${ogUrl}" content="${fields[ogUrl]}">
-      <meta property="${ogType}" content="${fields[ogType]}">
+      <meta property=${ogType} content=${fields[ogType]}>
       <meta property="${ogTitle}" content="${fields[ogTitle]}">
       <meta property="${ogDescription}" content="${fields[ogDescription]}">
       <meta property="${ogImage}" content="${fields[ogImage]}">
 
       <!-- Twitter Meta Tags -->
       <meta name="${twitterCard}" content="${fields[twitterCard]}">
-      <meta property="${twitterDomain}" content="${fields[twitterDomain]}">
+      <meta property=${twitterDomain} content=${fields[twitterDomain]}>
       <meta property="${twitterUrl}" content="${fields[twitterUrl]}">
       <meta name="${twitterTitle}" content="${fields[twitterTitle]}">
       <meta name="${twitterDescription}" content="${fields[twitterDescription]}">
@@ -88,7 +88,7 @@ const mockedFailedResponse: AxiosResponse = {
 };
 
 it('Returns successfully', async () => {
-  const fields = getFields(1);
+  const fields = getFields(2);
   const mockedSuccessfullyResponse = getMock(fields);
   const mockedAxios = axios as jest.Mocked<typeof axios>;
   mockedAxios.get.mockResolvedValue(mockedSuccessfullyResponse);
@@ -130,7 +130,7 @@ it('Returns successfully twitter only', async () => {
 });
 
 it('Returns successfully no opengraph', async () => {
-  const fields = getFields(3);
+  const fields = getFields(0);
   const mockedSuccessfullyResponse = getMock(fields);
   const mockedAxios = axios as jest.Mocked<typeof axios>;
   mockedAxios.get.mockResolvedValue(mockedSuccessfullyResponse);

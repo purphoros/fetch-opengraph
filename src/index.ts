@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { decode } from 'html-entities';
 
-export const metaTags = {
+export const metaTags: any = {
   title: 'title',
   description: 'description',
   ogUrl: 'og:url',
@@ -82,7 +82,6 @@ export const fetch = async (url: string, headers?: any): Promise<any> => {
   return new Promise(async (resolve, reject) => {
     try {
       const html = await fetchRaw(url, headers);
-
       let siteTitle = '';
 
       const tagTitle = html.match(
@@ -99,31 +98,17 @@ export const fetch = async (url: string, headers?: any): Promise<any> => {
       // There is no else statement
       /* istanbul ignore else */
       if (metas) {
-        for (const meta of metas) {
-          let properties: any = {};
-
-          const split = meta.replace(/<meta[\s\t\r\n]+(.*)/g, "$1").replace(/\s*\/?>/, "").split(/([\w:]+)=/);
-          for (let i=1; i<split.length; i = i + 2) {
-            const key = split[i].trim().replace(/(["']?)(.*?)\1/, "$2");
-            const value = split[i+1].trim().replace(/(["']?)(.*?)\1/, "$2")
-            properties = {
-              ...properties,
-              [key]: typeof value !== 'undefined' && value !== 'undefined' ? value : undefined
-            }
-          }
-
-          const reName = new RegExp(
-            `(${title}|${description}|${twitterCard}|${twitterTitle}|${twitterDescription}|${twitterImage})`
-          );
-          if (properties.name && properties.name.match(reName)) {
-            og.push({ name: properties.name, value: properties.content });
-          }
-
-          const reProperty = new RegExp(
-            `(${ogUrl}|${ogType}|${ogTitle}|${ogDescription}|${ogImage}|${twitterDomain}|${twitterUrl})`
-          );
-          if (properties.property && properties.property.match(reProperty)) {
-            og.push({ name: properties.property, value: properties.content });
+        for (let meta of metas) {
+          meta = meta.replace(/\s*\/?>$/, " />");
+          const zname = meta.replace(/[\s\S]*(property|name)\s*=\s*([\s\S]+)/, "$2");
+          const name = /^["']/.test(zname) ? zname.substr(1, zname.slice(1).indexOf(zname[0])) : zname.substr(0, zname.search(/[\s\t]/g))
+          const valid = !!Object.keys(metaTags).filter((m: any) => metaTags[m].toLowerCase() === name.toLowerCase()).length;
+          // There is no else statement
+          /* istanbul ignore else */
+          if (valid) {
+            const zcontent = meta.replace(/[\s\S]*(content)\s*=\s*([\s\S]+)/, "$2");
+            const content = /^["']/.test(zcontent) ? zcontent.substr(1, zcontent.slice(1).indexOf(zcontent[0])) : zcontent.substr(0, zcontent.search(/[\s\t]/g))
+            og.push({ name, value: content !== 'undefined' ? content : null });
           }
         }
       }
@@ -144,8 +129,6 @@ export const fetch = async (url: string, headers?: any): Promise<any> => {
 
       result.image = result[ogImage]
         ? result[ogImage]
-        : result[twitterImage]
-        ? result[twitterImage]
         : null;
 
       // URL
