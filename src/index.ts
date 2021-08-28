@@ -116,7 +116,8 @@ export const fetch = async (url: string, headers?: any): Promise<any> => {
       const result = og.reduce(
         (chain: any, meta: any) => ({ ...chain, [meta.name]: decode(meta.value) }),
         {
-          url
+          url,
+          raw: html
         }
       );
 

@@ -92,7 +92,8 @@ const fetch = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
                 }
             }
             const result = og.reduce((chain, meta) => (Object.assign(Object.assign({}, chain), { [meta.name]: html_entities_1.decode(meta.value) })), {
-                url
+                url,
+                raw: html
             });
             // Image
             result[ogImage] = result[ogImage] ? result[ogImage] : null;
