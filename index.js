@@ -20,6 +20,15 @@ exports.metaTags = {
     ogTitle: 'og:title',
     ogDescription: 'og:description',
     ogImage: 'og:image',
+    ogVideo: 'og:video',
+    ogVideoType: 'og:video:type',
+    ogVideoWidth: 'og:video:width',
+    ogVideoHeight: 'og:video:height',
+    ogVideoUrl: 'og:video:url',
+    twitterPlayer: 'twitter:player',
+    twitterPlayerWidth: 'twitter:player:width',
+    twitterPlayerHeight: 'twitter:player:height',
+    twitterPlayerStream: 'twitter:player:stream',
     twitterCard: 'twitter:card',
     twitterDomain: 'twitter:domain',
     twitterUrl: 'twitter:url',
@@ -93,7 +102,6 @@ const fetch = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
             }
             const result = og.reduce((chain, meta) => (Object.assign(Object.assign({}, chain), { [meta.name]: html_entities_1.decode(meta.value) })), {
                 url,
-                raw: html
             });
             // Image
             result[ogImage] = result[ogImage] ? result[ogImage] : null;

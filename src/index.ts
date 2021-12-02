@@ -9,6 +9,15 @@ export const metaTags: any = {
   ogTitle: 'og:title',
   ogDescription: 'og:description',
   ogImage: 'og:image',
+  ogVideo: 'og:video',
+  ogVideoType: 'og:video:type',
+  ogVideoWidth: 'og:video:width',
+  ogVideoHeight: 'og:video:height',
+  ogVideoUrl: 'og:video:url',
+  twitterPlayer: 'twitter:player',
+  twitterPlayerWidth: 'twitter:player:width',
+  twitterPlayerHeight: 'twitter:player:height',
+  twitterPlayerStream: 'twitter:player:stream',
   twitterCard: 'twitter:card',
   twitterDomain: 'twitter:domain',
   twitterUrl: 'twitter:url',
@@ -56,7 +65,7 @@ export const fetchRaw = async (url: string, headers?: any): Promise<any> => {
 
       return await resolve(response.data);
 
-    } catch (error) {
+    } catch (error: any) {
       return reject({ message: error.message });
     }
   });
@@ -117,7 +126,7 @@ export const fetch = async (url: string, headers?: any): Promise<any> => {
         (chain: any, meta: any) => ({ ...chain, [meta.name]: decode(meta.value) }),
         {
           url,
-          raw: html
+          // raw: html
         }
       );
 
@@ -165,7 +174,7 @@ export const fetch = async (url: string, headers?: any): Promise<any> => {
       result[ogType] = result[ogType] ? result[ogType] : 'website';
 
       return resolve(result);
-    } catch (error) {
+    } catch (error: any) {
       return reject({
         message: error.message,
         status: error.status || 400,
