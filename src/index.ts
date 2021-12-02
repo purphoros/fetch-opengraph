@@ -131,7 +131,7 @@ export const fetch = async (url: string, headers?: any): Promise<any> => {
         }
       }
 
-      const result = og.reduce(
+      const result: any = og.reduce(
         (chain: any, meta: any) => ({ ...chain, [meta.name]: decode(meta.value) }),
         {
           url,
@@ -151,9 +151,11 @@ export const fetch = async (url: string, headers?: any): Promise<any> => {
         : null;
 
       // Video
-      result.video = result[ogVideo]
-        ? result[ogVideo]
-        : null;
+      result.video = result[ogVideo] ? result[ogVideo] : null;
+      if (result.video) {
+        result[ogVideoWidth]  = result[ogVideoWidth]  ? result[ogVideoWidth]  : 560;
+        result[ogVideoHeight] = result[ogVideoHeight] ? result[ogVideoHeight] : 340;
+      }
 
       // URL
       result[ogUrl] = result[ogUrl] ? result[ogUrl] : url;

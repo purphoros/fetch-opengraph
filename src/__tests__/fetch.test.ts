@@ -11,6 +11,11 @@ const {
   ogTitle,
   ogDescription,
   ogImage,
+  ogVideo,
+  ogVideoType,
+  ogVideoWidth,
+  ogVideoHeight,
+  ogVideoUrl,
   twitterCard,
   twitterDomain,
   twitterUrl,
@@ -28,6 +33,17 @@ const getFields = (version: number = 1) => {
     description: 'Fetch opengraph information from an url. Contribute to purphoros/fetch-opengraph development by creating an account on GitHub.',
     fake: 'not open graph'
   };
+
+  if (version >= 4) {
+    fields[ogVideoWidth]  = '560';
+    fields[ogVideoHeight] = '340';
+  }
+
+  if (version >= 3) {
+    fields[ogVideo]       = "https://scontent.fmel12-1.fna.fbcdn.net/v/t42.9040-4/37620134_299264953975406_5445676729240649728_n.mp4?_nc_cat=105&ccb=1-5&_nc_sid=985c63&efg=eyJ2ZW5jb2RlX3RhZyI6InN2ZV9zZCJ9&_nc_ohc=0ahgaiu_SdAAX-ViUHZ&_nc_ht=scontent.fmel12-1.fna&oh=a76650da801a98f2f88f84e80e3d2572&oe=61A97196";
+    fields[ogVideoType]   = 'video/mp4';
+    fields[ogVideoUrl]    = fields[ogVideo];
+  }
 
   if (version >= 2) {
     fields[twitterCard] = 'summary_large_image';
@@ -57,19 +73,25 @@ const getMock = (fields: any): AxiosResponse => {
       <meta name="${description}" content="${fields[description]}">
 
       <!-- Facebook Meta Tags -->
-      <meta property="${ogUrl}" content="${fields[ogUrl]}">
-      <meta property=${ogType} content=${fields[ogType]}>
-      <meta property="${ogTitle}" content="${fields[ogTitle]}">
-      <meta property="${ogDescription}" content="${fields[ogDescription]}">
-      <meta property="${ogImage}" content="${fields[ogImage]}">
+      <meta property="${ogUrl}"          content="${fields[ogUrl]}">
+      <meta property=${ogType}           content=${fields[ogType]}>
+      <meta property="${ogTitle}"        content="${fields[ogTitle]}">
+      <meta property="${ogDescription}"  content="${fields[ogDescription]}">
+      <meta property="${ogImage}"        content="${fields[ogImage]}">
+      <meta property="${ogVideo}"        content="${fields[ogVideo]}">
+      <meta property="${ogVideoType}"    content="${fields[ogVideoType]}">
+      <meta property="${ogVideoWidth}"   content="${fields[ogVideoWidth]}">
+      <meta property="${ogVideoHeight}"  content="${fields[ogVideoHeight]}">
+      <meta property="${ogVideoUrl}"     content="${fields[ogVideoUrl]}">
 
       <!-- Twitter Meta Tags -->
-      <meta name="${twitterCard}" content="${fields[twitterCard]}">
-      <meta property=${twitterDomain} content=${fields[twitterDomain]}>
-      <meta property="${twitterUrl}" content="${fields[twitterUrl]}">
-      <meta name="${twitterTitle}" content="${fields[twitterTitle]}">
+      <meta name="${twitterCard}"        content="${fields[twitterCard]}">
+      <meta property=${twitterDomain}    content="${fields[twitterDomain]}">
+      <meta property="${twitterUrl}"     content="${fields[twitterUrl]}">
+      <meta name="${twitterTitle}"       content="${fields[twitterTitle]}">
       <meta name="${twitterDescription}" content="${fields[twitterDescription]}">
-      <meta name="${twitterImage}" content="${fields[twitterImage]}">`,
+      <meta name="${twitterImage}"       content="${fields[twitterImage]}">
+    `,
     status: 200,
     statusText: 'OK',
     headers: {},
@@ -94,7 +116,6 @@ it('Returns successfully', async () => {
   mockedAxios.get.mockResolvedValue(mockedSuccessfullyResponse);
 
   const result = await fetch(url);
-
   expect(result[description]).toEqual(fields[description]);
 
   expect(result[ogUrl]).toEqual(fields[ogUrl]);
@@ -138,6 +159,32 @@ it('Returns successfully no opengraph', async () => {
   const result = await fetch(url);
 
   expect(result[description]).toEqual(fields[description]);
+});
+
+it('Returns successfully on video without size', async () => {
+  const fields = getFields(3);
+  const mockedSuccessfullyResponse = getMock(fields);
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
+  mockedAxios.get.mockResolvedValue(mockedSuccessfullyResponse);
+
+  const result = await fetch(url);
+  expect(result[ogVideo]).toEqual(fields[ogVideo]);
+  expect(result[ogVideoType]).toEqual(fields[ogVideoType]);
+  expect(result[ogVideoUrl]).toEqual(fields[ogVideoUrl]);
+});
+
+it('Returns successfully on video with size', async () => {
+  const fields = getFields(4);
+  const mockedSuccessfullyResponse = getMock(fields);
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
+  mockedAxios.get.mockResolvedValue(mockedSuccessfullyResponse);
+
+  const result = await fetch(url);
+  expect(result[ogVideo]).toEqual(fields[ogVideo]);
+  expect(result[ogVideoType]).toEqual(fields[ogVideoType]);
+  expect(result[ogVideoWidth]).toEqual(fields[ogVideoWidth]);
+  expect(result[ogVideoHeight]).toEqual(fields[ogVideoHeight]);
+  expect(result[ogVideoUrl]).toEqual(fields[ogVideoUrl]);
 });
 
 it('Returns 400', async () => {
