@@ -80,6 +80,15 @@ export const fetch = async (url: string, headers?: any): Promise<any> => {
     ogTitle,
     ogDescription,
     ogImage,
+    ogVideo,
+    ogVideoType,
+    ogVideoWidth,
+    ogVideoHeight,
+    ogVideoUrl,
+    twitterPlayer,
+    twitterPlayerWidth,
+    twitterPlayerHeight,
+    twitterPlayerStream,
     twitterCard,
     twitterDomain,
     twitterUrl,
@@ -139,6 +148,11 @@ export const fetch = async (url: string, headers?: any): Promise<any> => {
 
       result.image = result[ogImage]
         ? result[ogImage]
+        : null;
+
+      // Video
+      result.video = result[ogVideo]
+        ? result[ogVideo]
         : null;
 
       // URL
