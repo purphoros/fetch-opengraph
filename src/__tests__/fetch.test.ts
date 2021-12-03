@@ -132,6 +132,16 @@ it('Returns successfully', async () => {
   expect(result[twitterImage]).toEqual(fields[twitterImage]);
 });
 
+it('Returns successfully with raw', async () => {
+  const fields = getFields(2);
+  const mockedSuccessfullyResponse = getMock(fields);
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
+  mockedAxios.get.mockResolvedValue(mockedSuccessfullyResponse);
+
+  const result = await fetch(url, {}, true);
+  expect(result.raw).toEqual(mockedSuccessfullyResponse.data);
+});
+
 it('Returns successfully twitter only', async () => {
   const fields = getFields(2);
   const mockedSuccessfullyResponse = getMock(fields);

@@ -73,7 +73,7 @@ const fetchRaw = (url, headers) => __awaiter(void 0, void 0, void 0, function* (
     }));
 });
 exports.fetchRaw = fetchRaw;
-const fetch = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
+const fetch = (url, headers, includeRaw = false) => __awaiter(void 0, void 0, void 0, function* () {
     const { title, description, ogUrl, ogType, ogTitle, ogDescription, ogImage, ogVideo, ogVideoType, ogVideoWidth, ogVideoHeight, ogVideoUrl, twitterPlayer, twitterPlayerWidth, twitterPlayerHeight, twitterPlayerStream, twitterCard, twitterDomain, twitterUrl, twitterTitle, twitterDescription, twitterImage } = exports.metaTags;
     return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
         try {
@@ -102,6 +102,7 @@ const fetch = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
             }
             const result = og.reduce((chain, meta) => (Object.assign(Object.assign({}, chain), { [meta.name]: html_entities_1.decode(meta.value) })), {
                 url,
+                raw: includeRaw ? html : null
             });
             // Image
             result[ogImage] = result[ogImage] ? result[ogImage] : null;
@@ -112,7 +113,7 @@ const fetch = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
                 ? result[ogImage]
                 : null;
             // Video
-            result.video = result[ogVideo] ? result[ogVideo] : null;
+            result.video = result[ogVideo] ? result[ogVideo] : result[ogVideoUrl] ? result[ogVideoUrl] : null;
             if (result.video) {
                 result[ogVideoWidth] = result[ogVideoWidth] ? result[ogVideoWidth] : 560;
                 result[ogVideoHeight] = result[ogVideoHeight] ? result[ogVideoHeight] : 340;

@@ -71,7 +71,7 @@ export const fetchRaw = async (url: string, headers?: any): Promise<any> => {
   });
 }
 
-export const fetch = async (url: string, headers?: any): Promise<any> => {
+export const fetch = async (url: string, headers?: any, includeRaw: boolean = false): Promise<any> => {
   const {
     title,
     description,
@@ -135,7 +135,7 @@ export const fetch = async (url: string, headers?: any): Promise<any> => {
         (chain: any, meta: any) => ({ ...chain, [meta.name]: decode(meta.value) }),
         {
           url,
-          // raw: html
+          raw: includeRaw ? html : null
         }
       );
 
