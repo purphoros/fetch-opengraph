@@ -151,7 +151,7 @@ export const fetch = async (url: string, headers?: any): Promise<any> => {
         : null;
 
       // Video
-      result.video = result[ogVideo] ? result[ogVideo] : null;
+      result.video = result[ogVideo] ? result[ogVideo] : result[ogVideoUrl] ? result[ogVideoUrl] : null;
       if (result.video) {
         result[ogVideoWidth]  = result[ogVideoWidth]  ? result[ogVideoWidth]  : 560;
         result[ogVideoHeight] = result[ogVideoHeight] ? result[ogVideoHeight] : 340;
