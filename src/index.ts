@@ -4,16 +4,37 @@ import { decode } from 'html-entities';
 export const metaTags: any = {
   title: 'title',
   description: 'description',
-  ogUrl: 'og:url',
-  ogType: 'og:type',
+  // Basic metadata
   ogTitle: 'og:title',
-  ogDescription: 'og:description',
+  ogType: 'og:type',
   ogImage: 'og:image',
+  ogUrl: 'og:url',
+  // Optional metadata
+  ogAudio: 'og:audio',
+  ogDescription: 'og:description',
+  ogDeterminer: 'og:determiner',
+  ogLocale: 'og:locale',
+  ogLocaleAlternate: 'og:locale:alternate',
+  ogSiteName: 'og:site_name',
   ogVideo: 'og:video',
+  // Structured Properties
+  //   images
+  ogImageUrl: 'og:image:url',
+  ogImageSecureUrl: 'og:image:secure_url',
+  ogImageType: 'og:image:type',
+  ogImageWidth: 'og:image:width',
+  ogImageHeight: 'og:image:height',
+  ogImageAlt: 'og:image:alt',
+  //   video
+  ogVideoSecureUrl: 'og:video:secure_url',
   ogVideoType: 'og:video:type',
   ogVideoWidth: 'og:video:width',
   ogVideoHeight: 'og:video:height',
   ogVideoUrl: 'og:video:url',
+  //   audio
+  ogAudioSecureUrl: 'og:audio:secure_url',
+  ogAudioType: 'og:audio:type',
+  // Social Networks
   twitterPlayer: 'twitter:player',
   twitterPlayerWidth: 'twitter:player:width',
   twitterPlayerHeight: 'twitter:player:height',
@@ -23,7 +44,25 @@ export const metaTags: any = {
   twitterUrl: 'twitter:url',
   twitterTitle: 'twitter:title',
   twitterDescription: 'twitter:description',
-  twitterImage: 'twitter:image'
+  twitterImage: 'twitter:image',
+  // No vertical
+  //   article
+  articlePublishedTime:'article:published_time',
+  articleModifiedTime:'article:modified_time',
+  articleExpirationTime:'article:expiration_time',
+  articleAuthor:'article:author',
+  articleSection:'article:section',
+  articleTag:'article:tag',
+  //   book
+  bookAuthor:'book:author',
+  bookIsbn:'book:isbn',
+  bookReleaseDate:'book:release_date',
+  bookTag:'book:tag',
+  //   profile
+  profileFirstName:'profile:first_name',
+  profileLastName:'profile:last_name',
+  profileUsername:'profile:username',
+  profileGender:'profile:gender',
 };
 
 export const queryParams = (str: string) => {
