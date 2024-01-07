@@ -1,5 +1,5 @@
 import { queryParams, fetch, metaTags } from '../index';
-import axios, { AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 
 jest.mock('axios');
 
@@ -65,6 +65,8 @@ const getFields = (version: number = 1) => {
   return fields;
 };
 
+const axiosConfig = {} as any;
+
 const getMock = (fields: any): AxiosResponse => {
   const mockedSuccessfullyResponse: AxiosResponse = {
     data: `
@@ -95,7 +97,7 @@ const getMock = (fields: any): AxiosResponse => {
     status: 200,
     statusText: 'OK',
     headers: {},
-    config: {}
+    config: axiosConfig
   };
 
   return mockedSuccessfullyResponse;
@@ -106,7 +108,7 @@ const mockedFailedResponse: AxiosResponse = {
   status: 400,
   statusText: 'Meh',
   headers: {},
-  config: {}
+  config: axiosConfig
 };
 
 it('Returns successfully', async () => {
@@ -203,7 +205,7 @@ it('Returns 400', async () => {
 
   try {
     await fetch(url);
-  } catch (error) {
+  } catch (error: any) {
     expect(error.status).toEqual(400);
   } finally {
     expect(axios.get).toHaveBeenCalled();
