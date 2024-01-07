@@ -47,6 +47,8 @@ const getFields  = () => {
   return fields;
 }
 
+const axiosConfig = {} as any;
+
 const getMock = (fields: any): AxiosResponse => {
   const mockedSuccessfullyResponse: AxiosResponse = {
     data: `
@@ -80,7 +82,7 @@ const getMock = (fields: any): AxiosResponse => {
     status: 200,
     statusText: 'OK',
     headers: {},
-    config: {}
+    config: axiosConfig
   };
 
   return mockedSuccessfullyResponse;
