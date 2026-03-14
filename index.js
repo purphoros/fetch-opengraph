@@ -12,6 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.fetch = exports.fetchRaw = exports.queryParams = exports.metaTags = void 0;
 const axios_1 = require("axios");
 const html_entities_1 = require("html-entities");
+const cheerio = require("cheerio");
 exports.metaTags = {
     title: 'title',
     description: 'description',
@@ -28,21 +29,20 @@ exports.metaTags = {
     ogLocaleAlternate: 'og:locale:alternate',
     ogSiteName: 'og:site_name',
     ogVideo: 'og:video',
-    // Structured Properties
-    //   images
+    // Structured Properties — images
     ogImageUrl: 'og:image:url',
     ogImageSecureUrl: 'og:image:secure_url',
     ogImageType: 'og:image:type',
     ogImageWidth: 'og:image:width',
     ogImageHeight: 'og:image:height',
     ogImageAlt: 'og:image:alt',
-    //   video
+    // Structured Properties — video
     ogVideoSecureUrl: 'og:video:secure_url',
     ogVideoType: 'og:video:type',
     ogVideoWidth: 'og:video:width',
     ogVideoHeight: 'og:video:height',
     ogVideoUrl: 'og:video:url',
-    //   audio
+    // Structured Properties — audio
     ogAudioSecureUrl: 'og:audio:secure_url',
     ogAudioType: 'og:audio:type',
     // Social Networks
@@ -56,156 +56,123 @@ exports.metaTags = {
     twitterTitle: 'twitter:title',
     twitterDescription: 'twitter:description',
     twitterImage: 'twitter:image',
-    // No vertical
-    //   article
+    // Article
     articlePublishedTime: 'article:published_time',
     articleModifiedTime: 'article:modified_time',
     articleExpirationTime: 'article:expiration_time',
     articleAuthor: 'article:author',
     articleSection: 'article:section',
     articleTag: 'article:tag',
-    //   book
+    // Book
     bookAuthor: 'book:author',
     bookIsbn: 'book:isbn',
     bookReleaseDate: 'book:release_date',
     bookTag: 'book:tag',
-    //   profile
+    // Profile
     profileFirstName: 'profile:first_name',
     profileLastName: 'profile:last_name',
     profileUsername: 'profile:username',
     profileGender: 'profile:gender',
 };
+const metaTagValues = new Set(Object.values(exports.metaTags).map(v => v.toLowerCase()));
 const queryParams = (str) => {
-    const url = str.replace(/^([^#]*).*/, "$1").replace(/^[^?]*\??(.*)/, "$1");
-    let result = {};
-    const regex = /([^=]+)=([^&]+)&?/g;
-    let match;
-    do {
-        match = regex.exec(url);
-        if (match) {
-            // This is to prevent an possible endless loop,
-            //   avoid "If path not taken" from code coverage since you're unable to reproduce this and it's required to prevent endless loops
-            /* istanbul ignore next */
-            if (match.index === regex.lastIndex)
-                regex.lastIndex++;
-            result = Object.assign(Object.assign({}, result), { [match[1]]: match[2] });
-        }
-    } while (match);
-    return result;
+    try {
+        const parsed = new URL(str);
+        const params = {};
+        parsed.searchParams.forEach((value, key) => {
+            params[key] = value;
+        });
+        return params;
+    }
+    catch (_a) {
+        return {};
+    }
 };
 exports.queryParams = queryParams;
 const fetchRaw = (url, headers) => __awaiter(void 0, void 0, void 0, function* () {
-    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
-        try {
-            const response = yield axios_1.default.get(url.replace(/^([^?#]*).*/, "$1"), {
-                params: exports.queryParams(url),
-                headers: Object.assign({ 'User-Agent': 'OpenGraph', 'Cache-Control': 'no-cache', Accept: '*/*', Connection: 'keep-alive' }, headers)
-            });
-            if (response.status >= 400) {
-                throw response;
-            }
-            return yield resolve(response.data);
-        }
-        catch (error) {
-            return reject({ message: error.message });
-        }
-    }));
+    const parsed = new URL(url);
+    const baseUrl = `${parsed.origin}${parsed.pathname}`;
+    const params = (0, exports.queryParams)(url);
+    const response = yield axios_1.default.get(baseUrl, {
+        params,
+        headers: Object.assign({ 'User-Agent': 'OpenGraph', 'Cache-Control': 'no-cache', Accept: '*/*', Connection: 'keep-alive' }, headers),
+    });
+    if (response.status >= 400) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    return response.data;
 });
 exports.fetchRaw = fetchRaw;
-const fetch = (url, headers, includeRaw = false) => __awaiter(void 0, void 0, void 0, function* () {
-    const { title, description, ogUrl, ogType, ogTitle, ogDescription, ogImage, ogVideo, ogVideoType, ogVideoWidth, ogVideoHeight, ogVideoUrl, twitterPlayer, twitterPlayerWidth, twitterPlayerHeight, twitterPlayerStream, twitterCard, twitterDomain, twitterUrl, twitterTitle, twitterDescription, twitterImage } = exports.metaTags;
-    return new Promise((resolve, reject) => __awaiter(void 0, void 0, void 0, function* () {
-        try {
-            const html = yield exports.fetchRaw(url, headers);
-            let siteTitle = '';
-            const tagTitle = html.match(/<title[^>]*>[\r\n\t\s]*([^<]+)[\r\n\t\s]*<\/title>/gim);
-            siteTitle = tagTitle[0].replace(/<title[^>]*>[\r\n\t\s]*([^<]+)[\r\n\t\s]*<\/title>/gim, '$1');
-            const og = [];
-            const metas = html.match(/<meta[^>]+>/gim);
-            // There is no else statement
-            /* istanbul ignore else */
-            if (metas) {
-                for (let meta of metas) {
-                    meta = meta.replace(/\s*\/?>$/, " />");
-                    const zname = meta.replace(/[\s\S]*(property|name)\s*=\s*([\s\S]+)/, "$2");
-                    const name = /^["']/.test(zname) ? zname.substr(1, zname.slice(1).indexOf(zname[0])) : zname.substr(0, zname.search(/[\s\t]/g));
-                    const valid = !!Object.keys(exports.metaTags).filter((m) => exports.metaTags[m].toLowerCase() === name.toLowerCase()).length;
-                    // There is no else statement
-                    /* istanbul ignore else */
-                    if (valid) {
-                        const zcontent = meta.replace(/[\s\S]*(content)\s*=\s*([\s\S]+)/, "$2");
-                        const content = /^["']/.test(zcontent) ? zcontent.substr(1, zcontent.slice(1).indexOf(zcontent[0])) : zcontent.substr(0, zcontent.search(/[\s\t]/g));
-                        og.push({ name, value: content !== 'undefined' ? content : null });
-                    }
-                }
+const fetch = (url_1, headers_1, ...args_1) => __awaiter(void 0, [url_1, headers_1, ...args_1], void 0, function* (url, headers, includeRaw = false) {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t;
+    const { ogUrl, ogType, ogTitle, ogDescription, ogImage, ogVideo, ogVideoWidth, ogVideoHeight, ogVideoUrl, twitterUrl, twitterTitle, twitterDescription, twitterImage, } = exports.metaTags;
+    try {
+        const html = yield (0, exports.fetchRaw)(url, headers);
+        const $ = cheerio.load(html);
+        const siteTitle = $('title').first().text().trim();
+        const og = {
+            url,
+            raw: includeRaw ? html : null,
+        };
+        $('meta').each((_, el) => {
+            const name = ($(el).attr('property') || $(el).attr('name') || '').toLowerCase();
+            const content = $(el).attr('content');
+            if (name && content !== undefined && content !== 'undefined' && metaTagValues.has(name)) {
+                og[name] = (0, html_entities_1.decode)(content);
             }
-            const result = og.reduce((chain, meta) => (Object.assign(Object.assign({}, chain), { [meta.name]: html_entities_1.decode(meta.value) })), {
-                url,
-                raw: includeRaw ? html : null
-            });
-            // Image
-            result[ogImage] = result[ogImage] ? result[ogImage] : null;
-            result[twitterImage] = result[twitterImage]
-                ? result[twitterImage]
-                : result[ogImage];
-            result.image = result[ogImage]
-                ? result[ogImage]
-                : null;
-            // Video
-            result.video = result[ogVideo] ? result[ogVideo] : result[ogVideoUrl] ? result[ogVideoUrl] : null;
-            if (result.video) {
-                result[ogVideoWidth] = result[ogVideoWidth] ? result[ogVideoWidth] : 560;
-                result[ogVideoHeight] = result[ogVideoHeight] ? result[ogVideoHeight] : 340;
-            }
-            // URL
-            result[ogUrl] = result[ogUrl] ? result[ogUrl] : url;
-            result[twitterUrl] = result[twitterUrl]
-                ? result[twitterUrl]
-                : result[ogUrl];
-            result.url = url;
-            // Description
-            result[ogDescription] = result[ogDescription]
-                ? result[ogDescription]
-                : result.description;
-            result[twitterDescription] = result[twitterDescription]
-                ? result[twitterDescription]
-                : result[ogDescription];
-            result.description = result[ogDescription];
-            // Title
-            result[ogTitle] = result[ogTitle] ? result[ogTitle] : siteTitle;
-            result[twitterTitle] = result[twitterTitle]
-                ? result[twitterTitle]
-                : result[ogTitle];
-            result.title = result[ogTitle];
-            // Type
-            result[ogType] = result[ogType] ? result[ogType] : 'website';
-            return resolve(result);
+        });
+        // Image fallbacks
+        og[ogImage] = (_a = og[ogImage]) !== null && _a !== void 0 ? _a : null;
+        og[exports.metaTags.twitterImage] = (_b = og[exports.metaTags.twitterImage]) !== null && _b !== void 0 ? _b : og[ogImage];
+        og.image = (_c = og[ogImage]) !== null && _c !== void 0 ? _c : null;
+        // Video fallbacks
+        og.video = (_e = (_d = og[ogVideo]) !== null && _d !== void 0 ? _d : og[ogVideoUrl]) !== null && _e !== void 0 ? _e : null;
+        if (og.video) {
+            og[ogVideoWidth] = (_f = og[ogVideoWidth]) !== null && _f !== void 0 ? _f : '560';
+            og[ogVideoHeight] = (_g = og[ogVideoHeight]) !== null && _g !== void 0 ? _g : '340';
         }
-        catch (error) {
-            return reject({
-                message: error.message,
-                status: error.status || 400,
-                error,
-                [title]: "",
-                [description]: "",
-                [ogUrl]: url,
-                [ogType]: "website",
-                [ogTitle]: "",
-                [ogDescription]: "",
-                [ogImage]: "",
-                [twitterCard]: "",
-                [twitterDomain]: "",
-                [twitterUrl]: url,
-                [twitterTitle]: "",
-                [twitterDescription]: "",
-                [twitterImage]: ""
-            });
-        }
-    }));
+        // URL fallbacks
+        og[ogUrl] = (_h = og[ogUrl]) !== null && _h !== void 0 ? _h : url;
+        og[twitterUrl] = (_j = og[twitterUrl]) !== null && _j !== void 0 ? _j : og[ogUrl];
+        og.url = url;
+        // Description fallbacks
+        og[ogDescription] = (_l = (_k = og[ogDescription]) !== null && _k !== void 0 ? _k : og[exports.metaTags.description]) !== null && _l !== void 0 ? _l : null;
+        og[twitterDescription] = (_m = og[twitterDescription]) !== null && _m !== void 0 ? _m : og[ogDescription];
+        og.description = (_o = og[ogDescription]) !== null && _o !== void 0 ? _o : '';
+        // Title fallbacks
+        og[ogTitle] = (_p = og[ogTitle]) !== null && _p !== void 0 ? _p : siteTitle;
+        og[twitterTitle] = (_q = og[twitterTitle]) !== null && _q !== void 0 ? _q : og[ogTitle];
+        og.title = (_r = og[ogTitle]) !== null && _r !== void 0 ? _r : '';
+        // Type fallback
+        og[ogType] = (_s = og[ogType]) !== null && _s !== void 0 ? _s : 'website';
+        return og;
+    }
+    catch (error) {
+        const message = error instanceof Error ? error.message : 'Unknown error';
+        const status = (_t = error.status) !== null && _t !== void 0 ? _t : 400;
+        throw {
+            message,
+            status,
+            error,
+            title: '',
+            description: '',
+            [ogUrl]: url,
+            [ogType]: 'website',
+            [ogTitle]: '',
+            [ogDescription]: '',
+            [ogImage]: '',
+            [exports.metaTags.twitterCard]: '',
+            [exports.metaTags.twitterDomain]: '',
+            [twitterUrl]: url,
+            [twitterTitle]: '',
+            [twitterDescription]: '',
+            [twitterImage]: '',
+        };
+    }
 });
 exports.fetch = fetch;
 exports.default = {
     fetch: exports.fetch,
-    fetchRaw: exports.fetchRaw
+    fetchRaw: exports.fetchRaw,
 };
 //# sourceMappingURL=index.js.map

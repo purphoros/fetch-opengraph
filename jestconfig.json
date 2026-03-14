@@ -2,6 +2,9 @@
   "transform": {
     "^.+\\.(t|j)sx?$": "ts-jest"
   },
+  "transformIgnorePatterns": [
+    "node_modules/(?!(axios|cheerio|htmlparser2|dom-serializer|dom-handler|domutils|entities|css-select|css-what|boolbase|nth-check|parse5|parse5-htmlparser2-tree-adapter)/)"
+  ],
   "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
   "moduleFileExtensions": [ "ts", "tsx", "js", "jsx", "json", "node" ],
   "coverageReporters": [
