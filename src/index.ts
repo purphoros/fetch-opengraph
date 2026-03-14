@@ -172,7 +172,7 @@ export const fetch = async (
     // Title fallbacks
     og[ogTitle] = og[ogTitle] ?? siteTitle;
     og[twitterTitle] = og[twitterTitle] ?? og[ogTitle];
-    og.title = og[ogTitle] ?? '';
+    og.title = og[ogTitle]!;
 
     // Type fallback
     og[ogType] = og[ogType] ?? 'website';

@@ -179,6 +179,22 @@ it('Returns successfully on video with size', async () => {
   expect(result[ogVideoUrl]).toEqual(fields[ogVideoUrl]);
 });
 
+it('Throws on HTTP 400+ status from fetchRaw', async () => {
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
+  mockedAxios.get.mockResolvedValue({
+    data: '',
+    status: 403,
+    statusText: 'Forbidden',
+    headers: {},
+    config: {}
+  });
+
+  await expect(fetch(url)).rejects.toMatchObject({
+    status: 400,
+    message: expect.stringContaining('403'),
+  });
+});
+
 it('Returns error on failure', async () => {
   const mockedAxios = axios as jest.Mocked<typeof axios>;
   mockedAxios.get.mockRejectedValue(new Error('Network error'));
@@ -190,6 +206,65 @@ it('Returns error on failure', async () => {
     expect(error.status).toEqual(400);
     expect(error.message).toEqual('Network error');
   }
+});
+
+it('Handles non-Error throw', async () => {
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
+  mockedAxios.get.mockRejectedValue('string error');
+
+  await expect(fetch(url)).rejects.toMatchObject({
+    message: 'Unknown error',
+    status: 400,
+  });
+});
+
+it('Falls back when og:description and og:title are missing', async () => {
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
+  mockedAxios.get.mockResolvedValue({
+    data: `
+      <title>Page Title</title>
+      <meta name="description" content="meta description">
+    `,
+    status: 200,
+    statusText: 'OK',
+    headers: {},
+    config: {}
+  });
+
+  const result = await fetch(url);
+  expect(result['og:description']).toEqual('meta description');
+  expect(result.description).toEqual('meta description');
+  expect(result['og:title']).toEqual('Page Title');
+  expect(result.title).toEqual('Page Title');
+  expect(result['og:type']).toEqual('website');
+});
+
+it('Falls back to empty strings when no title or description exist', async () => {
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
+  mockedAxios.get.mockResolvedValue({
+    data: '<html><body>No meta tags here</body></html>',
+    status: 200,
+    statusText: 'OK',
+    headers: {},
+    config: {}
+  });
+
+  const result = await fetch(url);
+  expect(result.description).toEqual('');
+  expect(result.title).toEqual('');
+  expect(result['og:description']).toBeNull();
+  expect(result['og:title']).toEqual('');
+});
+
+it('Preserves status from error object', async () => {
+  const mockedAxios = axios as jest.Mocked<typeof axios>;
+  const err = Object.assign(new Error('Not Found'), { status: 404 });
+  mockedAxios.get.mockRejectedValue(err);
+
+  await expect(fetch(url)).rejects.toMatchObject({
+    message: 'Not Found',
+    status: 404,
+  });
 });
 
 it('Returns query params from query string', () => {
